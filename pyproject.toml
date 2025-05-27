@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tecancavro"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "Ezira Yimer Wolle", email = "ezirayw@bu.edu" },
+    { name = "Ben Pruitt", email = "benjamin.pruitt@wyss.harvard.edu" },
+    { name = "Nick Conway", email = "nicholas.conway@wyss.harvard.edu" },
+]
+maintainers = [{ name = "Ezira Yimer Wolle", email = "ezirayw@bu.edu" }]
+keywords = ["tecan", "tecancavro", "evolver"]
+classifiers = [
+    'Development Status :: 1 - Beta',
+    'Environment :: Console',
+    'Intended Audience :: Science/Research',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.12',
+    'Topic :: Scientific/Engineering',
+]
+dependencies = ["pyserial"]
+
+[project.urls]
+Repository = "https://github.com/ezirayw/tecancavro"
+
+[project.optional-dependencies]
+dev = ["ruff"]
+
+[tool.pyright]
+venvPath = "/Users/ezirayimerwolle/.pyenv/versions"
+venv = "tecancavro"
+
+[tool.setuptools.packages.find]
+exclude = ["tecancavro.test_scripts*"]

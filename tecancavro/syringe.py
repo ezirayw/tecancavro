@@ -1,7 +1,9 @@
 import time
 
 try:
-    from gevent import monkey; monkey.patch_all(thread=False)
+    from gevent import monkey
+
+    monkey.patch_all(thread=False)
     from gevent import sleep
 except:
     from time import sleep
@@ -22,16 +24,17 @@ class SyringeError(Exception):
         self.err_code = error_code
         try:
             err_str = error_dict[error_code]
-            self.err_msg = '{0} [{1}]'.format(err_str, self.err_code)
+            self.err_msg = "{0} [{1}]".format(err_str, self.err_code)
         except KeyError:
-            self.err_msg = 'Unknown Error [{0}]'.format(error_code)
+            self.err_msg = "Unknown Error [{0}]".format(error_code)
 
     def __str__(self):
         return self.err_msg
 
 
 class SyringeTimeout(Exception):
-    """ Raised when a syringe wait command times out """
+    """Raised when a syringe wait command times out"""
+
     pass
 
 
@@ -42,16 +45,16 @@ class Syringe(object):
     """
 
     ERROR_DICT = {
-        1: 'Initialization Error',
-        2: 'Invalid Command',
-        3: 'Invalid Operand',
-        4: 'Invalid Command Sequence',
-        6: 'EEPROM Failure',
-        7: 'Device Not Initialized',
-        9: 'Plunger Overload',
-        10: 'Valve Overload',
-        11: 'Plunger Move Not Allowed',
-        15: 'Command Overflow'
+        1: "Initialization Error",
+        2: "Invalid Command",
+        3: "Invalid Operand",
+        4: "Invalid Command Sequence",
+        6: "EEPROM Failure",
+        7: "Device Not Initialized",
+        9: "Plunger Overload",
+        10: "Valve Overload",
+        11: "Plunger Move Not Allowed",
+        15: "Command Overflow",
     }
 
     def __init__(self, com_link):
@@ -61,9 +64,10 @@ class Syringe(object):
         self._repeat_error = False
 
     def _sendRcv(self, cmd_string):
+        print(f"here is the cmd_string: {cmd_string}")
         response = self.com_link.sendRcv(cmd_string)
-        ready = self._checkStatus(response['status_byte'])[0]
-        data = response['data']
+        ready = self._checkStatus(response["status_byte"])[0]
+        data = response["data"]
         return data, ready
 
     def _checkStatus(self, status_byte):
@@ -101,7 +105,7 @@ class Syringe(object):
         if self._ready:
             return True
         try:
-            ready = self._sendRcv('Q')[1]
+            ready = self._sendRcv("Q")[1]
             return ready
         except SyringeError as e:
             if self._repeat_error:
@@ -121,11 +125,10 @@ class Syringe(object):
         if delay:
             sleep(delay)
         start = time.time()
-        while (start-time.time()) < (start+timeout):
+        while (start - time.time()) < (start + timeout):
             ready = self._checkReady()
             if not ready:
                 sleep(polling_interval)
             else:
                 return
-        raise(SyringeTimeout('Timeout while waiting for syringe to be ready'
-                             ' to accept commands [{}]'.format(timeout)))
+        raise (SyringeTimeout("Timeout while waiting for syringe to be ready to accept commands [{}]".format(timeout)))
