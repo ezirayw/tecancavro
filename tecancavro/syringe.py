@@ -1,12 +1,7 @@
+import logging
 import time
 
-try:
-    from gevent import monkey
-
-    monkey.patch_all(thread=False)
-    from gevent import sleep
-except:
-    from time import sleep
+logger = logging.getLogger(__name__)
 
 
 class SyringeError(Exception):
@@ -64,7 +59,7 @@ class Syringe(object):
         self._repeat_error = False
 
     def _sendRcv(self, cmd_string):
-        print(f"here is the cmd_string: {cmd_string}")
+        logger.info(f"cmd_string: {cmd_string}")
         response = self.com_link.sendRcv(cmd_string)
         ready = self._checkStatus(response["status_byte"])[0]
         data = response["data"]
@@ -131,4 +126,10 @@ class Syringe(object):
                 sleep(polling_interval)
             else:
                 return
-        raise (SyringeTimeout("Timeout while waiting for syringe to be ready to accept commands [{}]".format(timeout)))
+        raise (
+            SyringeTimeout(
+                "Timeout while waiting for syringe to be ready to accept commands [{}]".format(
+                    timeout
+                )
+            )
+        )
