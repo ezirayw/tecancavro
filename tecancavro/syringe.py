@@ -118,12 +118,12 @@ class Syringe(object):
 
         """
         if delay:
-            sleep(delay)
+            time.sleep(delay)
         start = time.time()
         while (start - time.time()) < (start + timeout):
             ready = self._checkReady()
             if not ready:
-                sleep(polling_interval)
+                time.sleep(polling_interval)
             else:
                 return
         raise (

@@ -15,6 +15,7 @@ which sends a command string (`cmd`) and returns a dictionary containing the
 
 import glob
 import sys
+import time
 import uuid
 
 import serial
@@ -117,9 +118,9 @@ class TecanAPISerial(TecanAPI):
                 frame_in = self._receiveFrame()
                 if frame_in:
                     return frame_in
-                sleep(0.05 * attempt_num)
+                time.sleep(0.05 * attempt_num)
             except serial.SerialException:
-                sleep(0.2)
+                time.sleep(0.2)
         raise (
             TecanAPITimeout(
                 "Tecan serial communication exceeded max attempts [{0}]".format(
