@@ -134,7 +134,7 @@ if __name__ == "__main__":
             "Make sure XCaliburD pumps are properly connected to the RS485 bus, power is on, and bus USB is plugged in. Press Enter to continue"
         )
 
-        found_serial_port = TecanAPISerial.findSerialPumps()
+        found_serial_port = TecanAPISerial.findSerialPumps(tecan_addrs=[0, 1, 2, 3])
         logger.info(
             f"Found XCaliburD pump(s) on the following port: {found_serial_port}"
         )
