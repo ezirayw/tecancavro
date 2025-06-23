@@ -34,19 +34,19 @@ def listSerialPorts():
         A list of available serial ports
     """
     if sys.platform.startswith("win"):
-        ports = ["COM" + str(i + 1) for i in range(256)]
+        ports: list[str] = ["COM" + str(i + 1) for i in range(256)]
 
     elif sys.platform.startswith("linux") or sys.platform.startswith("cygwin"):
         # this is to exclude your current terminal "/dev/tty"
-        ports = glob.glob("/dev/tty[A-Za-z]*")
+        ports: list[str] = glob.glob("/dev/tty[A-Za-z]*")
 
     elif sys.platform.startswith("darwin"):
-        ports = glob.glob("/dev/tty.*")
+        ports: list[str] = glob.glob("/dev/tty.*")
 
     else:
         raise EnvironmentError("Unsupported platform")
 
-    result = []
+    result: list[str] = []
     for port in ports:
         try:
             s = serial.Serial(port)
@@ -65,22 +65,28 @@ class TecanAPISerial(TecanAPI):
     share a serial port (provided that the serial params are the same).
     """
 
-    ser_mapping = {}
+    ser_mapping: dict = {}
 
     @classmethod
     def findSerialPumps(
-        cls, tecan_addrs=[0], ser_baud=9600, ser_timeout=0.2, max_attempts=2
+        cls,
+        tecan_addrs: list[int] = [0],
+        ser_baud: int = 9600,
+        ser_timeout: float = 0.2,
+        max_attempts: int = 2,
     ):
         """Find any enumerated syringe pumps on the local com / serial ports.
 
         Returns list of (<ser_port>, <pump_config>, <pump_firmware_version>)
         tuples.
         """
-        found_devices = []
+        found_devices: list = []
         for port_path in listSerialPorts():
             for addr in tecan_addrs:
                 try:
-                    p = cls(addr, port_path, ser_baud, ser_timeout, max_attempts)
+                    p: TecanAPISerial = cls(
+                        addr, port_path, ser_baud, ser_timeout, max_attempts
+                    )
                     config = p.sendRcv("?76")["data"]
                     fw_version = p.sendRcv("&")["data"]
                     found_devices.append((port_path, config, fw_version))
@@ -105,15 +111,15 @@ class TecanAPISerial(TecanAPI):
         }
         self._registerSer()
 
-    def sendRcv(self, cmd):
-        attempt_num = 0
+    def sendRcv(self, cmd: str):
+        attempt_num: int = 0
         while attempt_num < self.ser_info["max_attempts"]:
             try:
                 attempt_num += 1
                 if attempt_num == 1:
-                    frame_out = self.emitFrame(cmd)
+                    frame_out: bytearray = self.emitFrame(cmd)
                 else:
-                    frame_out = self.emitRepeat()
+                    frame_out: bytearray = self.emitRepeat()
                 self._sendFrame(frame_out)
                 frame_in = self._receiveFrame()
                 if frame_in:
@@ -129,11 +135,11 @@ class TecanAPISerial(TecanAPI):
             )
         )
 
-    def _sendFrame(self, frame):
+    def _sendFrame(self, frame: bytearray):
         self._ser.write(frame)
 
     def _receiveFrame(self):
-        raw_data = b""
+        raw_data: bytes = b""
         raw_byte = self._ser.read()
         while raw_byte != b"":
             raw_data += raw_byte

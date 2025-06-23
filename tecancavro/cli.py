@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import time
 
 from tecancavro.models import XCaliburD
 from tecancavro.syringe import SyringeError, SyringeTimeout
@@ -151,6 +152,7 @@ if __name__ == "__main__":
             logger.info(f"Initializing XCaliburD pump on address {pump_address}")
             try:
                 xcalibur_pumps[pump_address].init()
+                time.sleep(0.5)
             except (SyringeError, SyringeTimeout):
                 logger.exception(
                     f"Error encountered trying to initialize XCaliburD pump on address {pump_address}, exiting program...",
